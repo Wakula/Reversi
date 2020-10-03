@@ -1,6 +1,5 @@
 import time
-from typing import Optional, List
-import os
+from typing import Optional, List, Tuple
 
 
 class FieldPrinter:
@@ -9,22 +8,29 @@ class FieldPrinter:
         'white': 'White player wins',
         'empty': 'Draw'
     }
-    REMAIN_ON_SCREEN = 2
+    PLAYER_OUTPUT = {
+        'W': 'White player',
+        'B': 'Black player',
+    }
 
-    def __init__(self, current_player: str, field: List[List[str]], winner: Optional[str], pass_move: bool):
+    def __init__(
+            self,
+            current_player: str,
+            field: List[List[str]],
+            winner: Optional[str],
+            move: Optional[Tuple[str, str]]
+    ):
         self.current_player = current_player
         self.field = field
         self.winner = winner
-        self.pass_move = pass_move
+        self.move = move
 
     def print(self):
-        os.system('clear')
         for row in self.field:
             print(row)
-        if self.pass_move:
+        if not self.move and not self.winner:
             print(f"{self.current_player} passes.")
         elif self.winner:
             print(self.WINNER_MESSAGES[self.winner])
         else:
             print(self.current_player)
-        time.sleep(self.REMAIN_ON_SCREEN)
