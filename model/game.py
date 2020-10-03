@@ -84,11 +84,12 @@ class Game:
         moves = []
         for row in range(len(self.field)):
             for col in range(len(self.field[row])):
-                for direction in Directions:
-                    cells_to_flip = self._would_flip_cells((row, col), direction)
-                    if cells_to_flip is not None:
-                        moves.append((row, col))
-                        break
+                if self.field[row][col] == Player.EMPTY:
+                    for direction in Directions:
+                        cells_to_flip = self._would_flip_cells((row, col), direction)
+                        if cells_to_flip is not None:
+                            moves.append((row, col))
+                            break
         
         self._available_moves = moves
         return moves
