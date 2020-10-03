@@ -9,7 +9,9 @@ class AbstractPlayer:
 
 class AiPlayer(AbstractPlayer):
     def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
-        return available_moves[random.randint(0, len(available_moves) - 1)]
+        move = available_moves[random.randint(0, len(available_moves) - 1)]
+        print(f"Selected move {move}.")
+        return move
 
 
 class HumanPlayer(AbstractPlayer):
@@ -19,12 +21,17 @@ class HumanPlayer(AbstractPlayer):
         while invalid_input:
             print(f"Here are your available options. {available_moves}")
             print('x=', end='')
-            x = int(input())
+            x = input()
+            if x.isdigit():
+                x = int(x)
             print('y=', end='')
-            y = int(input())
+            y = input()
+            if y.isdigit():
+                y = int(y)
             if (x, y) not in available_moves:
                 print(f"({x}, {y}) is not one of available moves. {available_moves}")
             else:
                 invalid_input = False
+        print(f"Selected move {(x, y)}.")
 
         return x, y

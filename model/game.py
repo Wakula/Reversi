@@ -14,8 +14,8 @@ class Game:
 
         half_length = self._side_length // 2
 
-        self.field[half_length - 1][half_length - 1] = self.field[half_length][half_length] = Player.BLACK
-        self.field[half_length - 1][half_length] = self.field[half_length][half_length - 1] = Player.WHITE
+        self.field[half_length - 1][half_length - 1] = self.field[half_length][half_length] = Player.WHITE
+        self.field[half_length - 1][half_length] = self.field[half_length][half_length - 1] = Player.BLACK
 
     def _get_opponent(self):
         if self.current_player == Player.BLACK:

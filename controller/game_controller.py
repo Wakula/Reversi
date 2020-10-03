@@ -40,7 +40,8 @@ class GameController:
             current_player.value if current_player else None,
             field,
             winner,
-            pass_move)
+            pass_move,
+            self.game.get_available_moves())
         field_printer.print()
 
     def move(self):
@@ -58,4 +59,19 @@ class GameController:
             current_player = self.game.current_player
             if previous_player == current_player:
                 self.print_field(self.OPPOSITE_PLAYER[current_player], pass_move=True)
-        self.print_field(None, winner=self.game.get_winner())
+
+        self.print_field(None, winner=self.game.get_winner().value)
+
+    def end_game(self):
+        end_map = {
+            'yes': False,
+            'no': True
+        }
+
+        while True:
+            print('Restart game? yes/no')
+            end = input()
+            if end not in end_map:
+                print(f'{end} not in (yes, no)')
+            else:
+                return end_map[end]
