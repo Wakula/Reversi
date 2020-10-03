@@ -10,12 +10,12 @@ class Game:
 
 
     def _init_field(self):
-        self.field = [[Cell.EMPTY] * self._side_length for i in range(self._side_length)]
+        self.field = [[Player.EMPTY] * self._side_length for i in range(self._side_length)]
 
         half_length = self._side_length // 2
 
-        self.field[half_length][half_length] = self.field[half_length + 1][half_length + 1] = Cell.WHITE
-        self.field[half_length][half_length + 1] = self.field[half_length + 1][half_length] = Cell.BLACK
+        self.field[half_length][half_length] = self.field[half_length + 1][half_length + 1] = Player.WHITE
+        self.field[half_length][half_length + 1] = self.field[half_length + 1][half_length] = Player.BLACK
 
     def get_winner(self):
         black_cells = 0
@@ -23,15 +23,24 @@ class Game:
 
         for row in self.field:
             for cell in row:
-                if cell == Cell.WHITE:
+                if cell == Player.WHITE:
                     white_cells += 1
-                elif cell == Cell.BLACK:
+                elif cell == Player.BLACK:
                     black_cells += 1
         
-        if (black_cells > white_cells):
+        if black_cells > white_cells:
             return Player.BLACK
-        elif (white_cells > black_cells):
+        elif white_cells > black_cells:
             return Player.WHITE
         else:
-            return Player.NONE
+            return Player.EMPTY
+    
+    def get_available_moves(self):
+        moves = []
+        for row in range(len(self.field)):
+            for cell in range(len(row)):
+                pass
 
+    
+    def would_flip_to(self, cell, diretion):
+        pass
