@@ -1,4 +1,4 @@
-from constants import *
+from model.constants import *
 
 class Game:
 
@@ -34,3 +34,4 @@ class Game:
             return Player.WHITE
         else:
             return Player.NONE
+
