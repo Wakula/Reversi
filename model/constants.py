@@ -8,6 +8,6 @@ class Player(enum.Enum):
 
 
 class Cell(enum.Enum):
-    BLACK = 'black'
-    WHITE = 'white'
-    EMPTY = 'empty'
+    BLACK = '*'
+    WHITE = '+'
+    EMPTY = '0'
