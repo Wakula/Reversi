@@ -1,9 +1,9 @@
 import enum
 
 class Player(enum.Enum):
-    BLACK = '*'
-    WHITE = '+'
-    EMPTY = '0'
+    BLACK = 'B'
+    WHITE = 'W'
+    EMPTY = ' '
 
 class Directions(enum.Enum):
     UP = 'UP'
