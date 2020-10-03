@@ -70,11 +70,10 @@ class Game:
         # Then we change player side and trying find availabale moves again
         # If even then there are no more moves - game is over
         while len(self.get_available_moves()) == 0:
-            
+            self._available_moves = None
             if self.current_player == current_player:
                 self.current_player = Player.EMPTY
                 break
-            
             self.current_player = self._get_opponent()    
 
     def get_available_moves(self):
