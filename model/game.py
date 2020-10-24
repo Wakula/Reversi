@@ -10,23 +10,16 @@ class Game:
         self._prev_move_passed = False
 
     def get_winner(self):
-        black_cells = 0
-        white_cells = 0
+        black_cells = self._field.get_players_points(Player.BLACK)
+        white_cells = self._field.get_players_points(Player.WHITE)
 
-        for row in self._field:
-            for cell in row:
-                if cell == Player.WHITE:
-                    white_cells += 1
-                elif cell == Player.BLACK:
-                    black_cells += 1
-        
         if black_cells < white_cells:
             return Player.BLACK
-        elif white_cells > black_cells:
+        elif white_cells < black_cells:
             return Player.WHITE
         else:
             return Player.EMPTY
-    
+
     def move(self, move):
         if not move:
             self._available_moves = None

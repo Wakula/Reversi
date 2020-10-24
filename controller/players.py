@@ -4,6 +4,7 @@ from controller.input_mapper import InputMapper
 from model.field import Field
 from model.constants import Player
 from controller.minimax_algorithm import MiniMaxReversi
+from controller.random_strategy import RandomStrategy
 
 
 class AbstractPlayer:
@@ -21,13 +22,9 @@ class OmikronBot(AbstractPlayer):
 
     def __init__(self, player_color: Player):
         super().__init__(player_color)
-        self.ai_strategy = self.AI_STRATEGY(
-            maximizing_player=False,
-            depth=3
-        )
 
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
-        selected_move = self.ai_strategy.get_move(game_field, self.player_color)
+        selected_move = self.AI_STRATEGY.get_move(game_field, self.player_color)
         if not selected_move:
             print('pass')
             return
@@ -54,3 +51,7 @@ class KorotenkoBot(AbstractPlayer):
                 invalid_input = False
 
         return x, y
+
+
+class TestBot(OmikronBot):
+    AI_STRATEGY = RandomStrategy

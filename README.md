@@ -1,5 +1,14 @@
 # Reversi
-Lab1 for Game Dev course
+Lab2 for Game Dev course
 
-Prototype
-![Alt text](static/prototype.png?raw=true "Optional Title")
+```
+python3.7 test_reversi.py
+```
+```
+TestReversi(
+    tests_amount=100,
+    include_ui=False,
+).test()
+```
+
+if set to True include_ui will print field on each turn
