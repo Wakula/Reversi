@@ -35,7 +35,7 @@ class GameController:
         self.players[Player.WHITE] = self.OPPONENT_TYPES[opponent]()
 
     def print_field(self, current_player, *, winner=None, pass_move=False):
-        field = [[cell.value for cell in row] for row in self.game.field]
+        field = [[cell.value for cell in row] for row in self.game.get_field().field]
         field_printer = FieldPrinter(
             current_player.value if current_player else None,
             field,
