@@ -53,7 +53,7 @@ class GameController:
     def run_game(self):
         current_player = self.game.current_player
         while current_player != Player.EMPTY:
-            #self.print_field(current_player)
+            # self.print_field(current_player)
             self.move()
             current_player = self.game.current_player   
 

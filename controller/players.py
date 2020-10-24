@@ -1,8 +1,9 @@
 import random
-from typing import Tuple, List, Optional
+from typing import Tuple, Optional
 from controller.input_mapper import InputMapper
 from model.field import Field
 from model.constants import Player
+from controller.minimax_algorithm import MiniMaxReversi
 
 
 class AbstractPlayer:
@@ -16,15 +17,22 @@ class AbstractPlayer:
 
 
 class OmikronBot(AbstractPlayer):
+    AI_STRATEGY = MiniMaxReversi
+
+    def __init__(self, player_color: Player):
+        super().__init__(player_color)
+        self.ai_strategy = self.AI_STRATEGY(
+            maximizing_player=False,
+            depth=2
+        )
+
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
-        available_moves = game_field.get_available_moves(self.player_color)
-        if not available_moves:
+        selected_move = self.ai_strategy.get_move(game_field, self.player_color)
+        if not selected_move:
             print('pass')
             return
-        selected_move = available_moves[random.randint(0, len(available_moves) - 1)]
-        move = selected_move
-        print(self.INPUT_MAPPER.get_mapping(move))
-        return move
+        print(self.INPUT_MAPPER.get_mapping(selected_move))
+        return selected_move
 
 
 class KorotenkoBot(AbstractPlayer):
