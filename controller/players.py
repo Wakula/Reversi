@@ -1,17 +1,20 @@
 import random
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from controller.input_mapper import InputMapper
 
 
 class AbstractPlayer:
     INPUT_MAPPER = InputMapper
 
-    def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
+    def select_move(self, available_moves: List[Tuple[int, int]]) -> Optional[Tuple[int, int]]:
         pass
 
 
 class OmikronBot(AbstractPlayer):
-    def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
+    def select_move(self, available_moves: List[Tuple[int, int]]) -> Optional[Tuple[int, int]]:
+        if not available_moves:
+            print('pass')
+            return
         selected_move = available_moves[random.randint(0, len(available_moves) - 1)]
         move = selected_move
         print(self.INPUT_MAPPER.get_mapping(move))
@@ -19,7 +22,9 @@ class OmikronBot(AbstractPlayer):
 
 
 class KorotenkoBot(AbstractPlayer):
-    def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
+    def select_move(self, available_moves: List[Tuple[int, int]]) -> Optional[Tuple[int, int]]:
+        if not available_moves:
+            return
         # print("Dear Player Input x, y coordinates to move please.")
         invalid_input = True
         while invalid_input:

@@ -55,11 +55,7 @@ class GameController:
         while current_player != Player.EMPTY:
             # self.print_field(current_player)
             self.move()
-            previous_player = current_player
             current_player = self.game.current_player
-            if previous_player == current_player:
-                print('pass')
-                # self.print_field(self.OPPOSITE_PLAYER[current_player], pass_move=True)
 
         # self.print_field(None, winner=self.game.get_winner().value)
 
