@@ -7,6 +7,7 @@ class Game:
         self.current_player = Player.BLACK
         self._field = Field(black_hole)
         self._available_moves = None
+        self._prev_move_passed = False
 
     def get_winner(self):
         black_cells = 0
@@ -27,6 +28,17 @@ class Game:
             return Player.EMPTY
     
     def move(self, move):
+        if not move:
+            self._available_moves = None
+            if self._prev_move_passed:
+                self.current_player = Player.EMPTY
+                return
+
+            self.current_player = self._field.get_opponent(self.current_player)
+            self._prev_move_passed = True
+            return
+
+        self._prev_move_passed = False    
         current_player = self.current_player
         (row, col) = move
         cells_to_flip = []
@@ -35,16 +47,6 @@ class Game:
 
         self._available_moves = None
         self.current_player = self._field.get_opponent(current_player)
-
-        # If player cannot make a move (get_available_moves length is zero)
-        # Then we change player side and trying to find available moves again
-        # If even then there are no more moves - game is over
-        while len(self.get_available_moves()) == 0:
-            self._available_moves = None
-            if self.current_player == current_player:
-                self.current_player = Player.EMPTY
-                break
-            self.current_player = self._field.get_opponent(self.current_player)  
 
     def get_field(self):
         return self._field.get_copy()
