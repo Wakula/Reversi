@@ -36,6 +36,17 @@ class Field:
                             break
         return moves
 
+
+    def get_players_points(self, player):
+        points = 0
+
+        for row in self.field:
+            for cell in row:
+                if cell == player:
+                    points += 1
+        
+        return points
+
     def move(self, move, player):
         if not move in self.get_available_moves(player):
             raise Exception("Move was not in available moves list.")
