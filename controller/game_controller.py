@@ -2,37 +2,38 @@ from model.constants import Player
 from model.game import Game
 from controller import constants
 from controller import players
+from controller.input_mapper import InputMapper
 from ui.field_printer import FieldPrinter
 
 
 class GameController:
+    INPUT_MAPPER = InputMapper
+
     OPPONENT_TYPES = {
-        constants.HUMAN_PLAYER: players.HumanPlayer,
-        constants.AI_PLAYER: players.AiPlayer,
+        constants.KOROTENKO_BOT: players.KorotenkoBot,
+        constants.OMIKRON_BOT: players.OmikronBot,
     }
     OPPOSITE_PLAYER = {
         Player.BLACK: Player.WHITE,
         Player.WHITE: Player.BLACK
     }
+    COLOR_NAMING_MAP = {
+        'black': Player.BLACK,
+        'white': Player.WHITE,
+    }
 
     def __init__(self):
-        self.game = Game()
-        self.players = {}
+        black_hole_coordinates = input()
+        omikron_bot_color = Player(self.COLOR_NAMING_MAP[input()])
+        korotenko_bot_color = Player(self.OPPOSITE_PLAYER[omikron_bot_color])
+        self.game = Game(
+            self.INPUT_MAPPER.get_coordinates(black_hole_coordinates)
+        )
+        self.players = {
+            omikron_bot_color: players.OmikronBot(),
+            korotenko_bot_color: players.KorotenkoBot(),
+        }
         self.winner = None
-
-    def prepare_game(self):
-        print('Select Player to play against. Other player or AI.')
-        invalid_input = True
-        while invalid_input:
-            print(f'Choices are {constants.PLAYER_TYPES}')
-            print('opponent=', end='')
-            opponent = str(input())
-            if opponent not in constants.PLAYER_TYPES:
-                print(f"{opponent} is invalid input.")
-            else:
-                invalid_input = False
-        self.players[Player.BLACK] = players.HumanPlayer()
-        self.players[Player.WHITE] = self.OPPONENT_TYPES[opponent]()
 
     def print_field(self, current_player, *, winner=None, pass_move=False):
         field = [[cell.value for cell in row] for row in self.game.get_field().field]

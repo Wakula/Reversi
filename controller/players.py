@@ -1,37 +1,32 @@
 import random
 from typing import Tuple, List
+from controller.input_mapper import InputMapper
 
 
 class AbstractPlayer:
+    INPUT_MAPPER = InputMapper
+
     def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
         pass
 
 
-class AiPlayer(AbstractPlayer):
+class OmikronBot(AbstractPlayer):
     def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
-        move = available_moves[random.randint(0, len(available_moves) - 1)]
-        print(f"Selected move {move}.")
+        selected_move = available_moves[random.randint(0, len(available_moves) - 1)]
+        move = selected_move
+        print(self.INPUT_MAPPER.get_mapping(move))
         return move
 
 
-class HumanPlayer(AbstractPlayer):
+class KorotenkoBot(AbstractPlayer):
     def select_move(self, available_moves: List[Tuple[int, int]]) -> Tuple[int, int]:
         print("Dear Player Input x, y coordinates to move please.")
         invalid_input = True
         while invalid_input:
-            print(f"Here are your available options. {available_moves}")
-            print('x=', end='')
-            x = input()
-            if x.isdigit():
-                x = int(x)
-            print('y=', end='')
-            y = input()
-            if y.isdigit():
-                y = int(y)
+            x, y = self.INPUT_MAPPER.get_coordinates(input())
             if (x, y) not in available_moves:
                 print(f"({x}, {y}) is not one of available moves. {available_moves}")
             else:
                 invalid_input = False
-        print(f"Selected move {(x, y)}.")
 
         return x, y

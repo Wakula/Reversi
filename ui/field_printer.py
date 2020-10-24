@@ -1,8 +1,18 @@
-import copy
 from typing import Optional, List
 
 
 class FieldPrinter:
+    Y_MAPPING_TO_COORDINATES = {
+        0: 'A',
+        1: 'B',
+        2: 'C',
+        3: 'D',
+        4: 'E',
+        5: 'F',
+        6: 'G',
+        7: 'H',
+    }
+
     WINNER_MESSAGES = {
         'B': 'Black player wins',
         'W': 'White player wins',
@@ -29,10 +39,10 @@ class FieldPrinter:
 
     def prepare_output(self):
         prepared_field = []
-        coordinates = [str(i) for i in range(len(self.field))]
+        coordinates = [self.Y_MAPPING_TO_COORDINATES[i] for i in range(len(self.field))]
         prepared_field.append(['+'] + coordinates)
         for x in range(len(self.field)):
-            row = [str(x)]
+            row = [str(x+1)]
             for y in range(len(self.field[x])):
                 if (x, y) in self.available_moves:
                     row.append('*')
