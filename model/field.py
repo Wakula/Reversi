@@ -28,7 +28,7 @@ class Field:
         moves = []
         for row in range(len(self.field)):
             for col in range(len(self.field[row])):
-                if self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
+                if self.field[row][col] == Player.EMPTY:
                     for direction in Directions:
                         cells_to_flip = self._would_flip_cells((row, col), direction, player)
                         if cells_to_flip is not None:
