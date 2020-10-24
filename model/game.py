@@ -44,7 +44,7 @@ class Game:
             if self.current_player == current_player:
                 self.current_player = Player.EMPTY
                 break
-            self.current_player = self._field.get_opponent(current_player)  
+            self.current_player = self._field.get_opponent(self.current_player)  
 
     def get_field(self):
         return self._field.get_copy()
