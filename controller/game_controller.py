@@ -30,8 +30,8 @@ class GameController:
             self.INPUT_MAPPER.get_coordinates(black_hole_coordinates)
         )
         self.players = {
-            omikron_bot_color: players.OmikronBot(),
-            korotenko_bot_color: players.KorotenkoBot(),
+            omikron_bot_color: players.OmikronBot(omikron_bot_color),
+            korotenko_bot_color: players.KorotenkoBot(korotenko_bot_color),
         }
         self.winner = None
 
@@ -46,16 +46,16 @@ class GameController:
         field_printer.print()
 
     def move(self):
-        available_moves = self.game.get_available_moves()
-        player_move = self.players[self.game.current_player].select_move(available_moves)
+        game_field = self.game.get_field()
+        player_move = self.players[self.game.current_player].select_move(game_field)
         self.game.move(player_move)
 
     def run_game(self):
         current_player = self.game.current_player
         while current_player != Player.EMPTY:
-            # self.print_field(current_player)
+            #self.print_field(current_player)
             self.move()
-            current_player = self.game.current_player
+            current_player = self.game.current_player   
 
         # self.print_field(None, winner=self.game.get_winner().value)
 
