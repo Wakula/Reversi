@@ -26,7 +26,6 @@ class Node:
         available_moves = self.field.get_available_moves(self.player)
         if not available_moves:
             current_field = self.field.get_copy()
-            current_field.move()
             return [Node(current_field, next_player, None)]
         for move in available_moves:
             current_field = self.field.get_copy()

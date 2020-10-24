@@ -23,7 +23,7 @@ class OmikronBot(AbstractPlayer):
         super().__init__(player_color)
         self.ai_strategy = self.AI_STRATEGY(
             maximizing_player=False,
-            depth=2
+            depth=3
         )
 
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
