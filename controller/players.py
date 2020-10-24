@@ -28,7 +28,10 @@ class KorotenkoBot(AbstractPlayer):
         # print("Dear Player Input x, y coordinates to move please.")
         invalid_input = True
         while invalid_input:
-            x, y = self.INPUT_MAPPER.get_coordinates(input())
+            try:
+                x, y = self.INPUT_MAPPER.get_coordinates(input())
+            except ValueError:
+                return None
             if (x, y) not in available_moves:
                 # print(f"({x}, {y}) is not one of available moves. {available_moves}")
                 pass
