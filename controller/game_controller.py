@@ -9,10 +9,6 @@ from ui.field_printer import FieldPrinter
 class GameController:
     INPUT_MAPPER = InputMapper
 
-    OPPONENT_TYPES = {
-        constants.KOROTENKO_BOT: players.KorotenkoBot,
-        constants.OMIKRON_BOT: players.OmikronBot,
-    }
     OPPOSITE_PLAYER = {
         Player.BLACK: Player.WHITE,
         Player.WHITE: Player.BLACK
