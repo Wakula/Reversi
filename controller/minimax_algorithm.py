@@ -10,18 +10,20 @@ class Result:
 
 INFINITY = float('inf')
 
+CORNERS = [
+    (0, 0), (0, 7), (7, 0), (7, 7)
+]
+
 
 class Node:
-    def __init__(self, field, player, move):
+    def __init__(self, field, player):
         self.field = field
         self.player = player
-        self.move = move
-        self._children = None
+        self.opponent = self.field.get_opponent(self.player)
 
     @property
     def is_terminal(self):
-        next_player = self.field.get_opponent(self.player)
-        return (not self.field.get_available_moves(self.player)) and (not self.field.get_available_moves(next_player))
+        return (not self.field.get_available_moves(self.player)) and (not self.field.get_available_moves(self.opponent))
 
     @property
     def value(self):
@@ -29,21 +31,13 @@ class Node:
 
     @property
     def children(self):
-        if self._children:
-            return self._children
-        nodes = []
-        next_player = self.field.get_opponent(self.player)
         available_moves = self.field.get_available_moves(self.player)
         if not available_moves:
-            current_field = self.field.get_copy()
-            return [Node(current_field, next_player, None)]
+            return Node(self.field, self.opponent), None, lambda: ()
         for move in available_moves:
-            current_field = self.field.get_copy()
-            current_field.move(move, self.player)
-            node = Node(current_field, next_player, move)
-            nodes.append(node)
-        self._children = nodes
-        return nodes
+            flipped_cells = self.field.move(move, self.player)
+            node = Node(self.field, self.opponent)
+            yield node, move, lambda: self.field.undo_move(move, self.player, flipped_cells)
 
 
 class MiniMaxReversi:
@@ -56,28 +50,36 @@ class MiniMaxReversi:
             return Result(value=node.value)
         if maximizing_player:
             result = Result(value=-INFINITY)
-            for child in node.children:
-                result = max(result, cls._minimax(child, alpha, beta, depth-1, False), key=lambda result: result.value)
+            for child, move, undo_move in node.children:
+                minimax_result = cls._minimax(child, alpha, beta, depth-1, False)
+                if move in CORNERS:
+                    minimax_result.value = INFINITY
                 alpha = max(alpha, result.value)
+                undo_move()
+                if minimax_result.value <= result.value:
+                    result = minimax_result
+                    result.move = move
                 if beta <= alpha:
                     break
-            if depth == cls.DEPTH - 1:
-                result.move = node.move
             return result
         else:
             result = Result(value=INFINITY)
-            for child in node.children:
-                result = min(result, cls._minimax(child, alpha, beta, depth-1, True), key=lambda result: result.value)
+            for child, move, undo_move in node.children:
+                minimax_result = cls._minimax(child, alpha, beta, depth-1, True)
+                if move in CORNERS:
+                    minimax_result.value = -INFINITY
                 beta = min(beta, result.value)
+                undo_move()
+                if minimax_result.value <= result.value:
+                    result = minimax_result
+                    result.move = move
                 if beta <= alpha:
                     break
-            if depth == cls.DEPTH - 1:
-                result.move = node.move
             return result
 
     @classmethod
     def get_move(cls, game_field, player_color):
-        initial_node = cls.NODE(game_field, player_color, None)
+        initial_node = cls.NODE(game_field, player_color)
         result = cls._minimax(initial_node, -INFINITY, INFINITY, cls.DEPTH, True)
 
         return result.move

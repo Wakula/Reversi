@@ -42,7 +42,7 @@ class Game:
         self.current_player = self._field.get_opponent(current_player)
 
     def get_field(self):
-        return self._field.get_copy()
+        return self._field
 
     def get_available_moves(self):
         if self._available_moves is None:

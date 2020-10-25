@@ -60,7 +60,7 @@ class Field:
         
         return points
 
-    def move(self, move, player):
+    def move(self, move, player) -> list:
         if not move in self.get_available_moves(player):
             raise Exception("Move was not in available moves list.")
 
@@ -77,7 +77,9 @@ class Field:
             (flip_cell_row, flip_cell_col) = cell_to_flip
             self.field[flip_cell_row][flip_cell_col] = player
         
-        self.field[row][col] = player  
+        self.field[row][col] = player
+
+        return cells_to_flip
 
     def get_copy(self):
         new_field = Field()
@@ -103,3 +105,13 @@ class Field:
             field=self.field
         )
         return self.FLIP_CELLS[direction](flipper)
+
+    def undo_move(self, move, player, cells_to_flip):
+        opponent = self.get_opponent(player)
+        row, col = move
+
+        for cell_to_flip in cells_to_flip:
+            (flip_cell_row, flip_cell_col) = cell_to_flip
+            self.field[flip_cell_row][flip_cell_col] = opponent
+
+        self.field[row][col] = Player.EMPTY

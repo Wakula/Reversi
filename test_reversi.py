@@ -54,5 +54,5 @@ class TestReversi:
 
 TestReversi(
     tests_amount=100,
-    include_ui=False,
+    include_ui=True,
 ).test()
