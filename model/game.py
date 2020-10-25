@@ -38,10 +38,8 @@ class Game:
             self._prev_move_passed = True
             return
 
-        self._prev_move_passed = False    
+        self._prev_move_passed = False
         current_player = self.current_player
-        (row, col) = move
-        cells_to_flip = []
 
         self._field.move(move, current_player)
 
@@ -56,3 +54,10 @@ class Game:
             self._available_moves = self._field.get_available_moves(self.current_player)
 
         return self._available_moves
+
+    def is_finished(self):
+        if self.current_player == Player.EMPTY:
+            return True
+        player_moves = self.get_available_moves()
+        opponents_moves = self._field.get_opponent(self.current_player)
+        return not player_moves and not opponents_moves

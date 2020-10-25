@@ -14,17 +14,21 @@ class AbstractPlayer:
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
         pass
 
+    def print_move(self, move):
+        pass
+
 
 class OmikronBot(AbstractPlayer):
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
         available_moves = game_field.get_available_moves(self.player_color)
         if not available_moves:
-            print('pass')
             return
         selected_move = available_moves[random.randint(0, len(available_moves) - 1)]
         move = selected_move
-        print(self.INPUT_MAPPER.get_mapping(move))
         return move
+
+    def print_move(self, move):
+        print(self.INPUT_MAPPER.get_mapping(move))
 
 
 class KorotenkoBot(AbstractPlayer):
@@ -32,17 +36,4 @@ class KorotenkoBot(AbstractPlayer):
         available_moves = game_field.get_available_moves(self.player_color)
         if not available_moves:
             return
-        # print("Dear Player Input x, y coordinates to move please.")
-        invalid_input = True
-        while invalid_input:
-            try:
-                x, y = self.INPUT_MAPPER.get_coordinates(input())
-            except ValueError:
-                return None
-            if (x, y) not in available_moves:
-                # print(f"({x}, {y}) is not one of available moves. {available_moves}")
-                pass
-            else:
-                invalid_input = False
-
-        return x, y
+        return self.INPUT_MAPPER.get_coordinates(input())

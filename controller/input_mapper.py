@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 
 class InputMapper:
@@ -33,12 +33,17 @@ class InputMapper:
         return cls.Y_COORDINATES_TO_MAPPING[y]
 
     @classmethod
-    def get_coordinates(cls, input_: str) -> Tuple[int, int]:
-        y, x = tuple(input_)
+    def get_coordinates(cls, input_: str) -> Optional[Tuple[int, int]]:
+        try:
+            y, x = tuple(input_)
+        except ValueError:
+            return None
         return cls.get_x(x), cls.get_y(y)
 
     @classmethod
-    def get_mapping(cls, coordinates: Tuple[int, int]) -> str:
+    def get_mapping(cls, coordinates: Optional[Tuple[int, int]]) -> str:
+        if not coordinates:
+            return 'pass'
         x, y = coordinates
         y_mapping = cls.get_y_mapping(y)
         x_mapping = cls.get_x_mapping(x)

@@ -49,26 +49,11 @@ class GameController:
         game_field = self.game.get_field()
         player_move = self.players[self.game.current_player].select_move(game_field)
         self.game.move(player_move)
+        return player_move
 
     def run_game(self):
-        current_player = self.game.current_player
-        while current_player != Player.EMPTY:
-            #self.print_field(current_player)
-            self.move()
-            current_player = self.game.current_player   
-
-        # self.print_field(None, winner=self.game.get_winner().value)
-
-    def end_game(self):
-        end_map = {
-            'yes': False,
-            'no': True
-        }
-
-        while True:
-            print('Restart game? yes/no')
-            end = input()
-            if end not in end_map:
-                print(f'{end} not in (yes, no)')
-            else:
-                return end_map[end]
+        while not self.game.is_finished():
+            current_player = self.game.current_player
+            # self.print_field(current_player)
+            move = self.move()
+            self.players[current_player].print_move(move)
