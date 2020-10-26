@@ -7,7 +7,6 @@ class Game:
         self.current_player = Player.BLACK
         self._field = Field(black_hole)
         self._available_moves = None
-        self._prev_move_passed = False
 
     def get_winner(self):
         black_cells = 0
@@ -30,15 +29,11 @@ class Game:
     def move(self, move):
         if not move:
             self._available_moves = None
-            if self._prev_move_passed:
-                self.current_player = Player.EMPTY
-                return
-
             self.current_player = self._field.get_opponent(self.current_player)
-            self._prev_move_passed = True
+            if not self.get_available_moves():
+                self.current_player = Player.EMPTY
             return
 
-        self._prev_move_passed = False
         current_player = self.current_player
 
         self._field.move(move, current_player)
