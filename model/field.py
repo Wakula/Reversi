@@ -61,7 +61,7 @@ class Field:
         return points
 
     def move(self, move, player) -> list:
-        if not move in self.get_available_moves(player):
+        if move not in self.get_available_moves(player):
             raise Exception("Move was not in available moves list.")
 
         (row, col) = move

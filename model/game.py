@@ -7,6 +7,7 @@ class Game:
         self.current_player = Player.BLACK
         self._field = Field(black_hole)
         self._available_moves = None
+        self._is_finished = False
 
     def get_winner(self):
         black_cells = self._field.get_players_points(Player.BLACK)
@@ -20,11 +21,12 @@ class Game:
             return Player.EMPTY
 
     def move(self, move):
+        self.raise_error_if_invalid(move)
         if not move:
             self._available_moves = None
             self.current_player = self._field.get_opponent(self.current_player)
             if not self.get_available_moves():
-                self.current_player = Player.EMPTY
+                self._is_finished = True
             return
 
         current_player = self.current_player
@@ -43,7 +45,14 @@ class Game:
 
         return self._available_moves
 
+    @property
     def is_finished(self):
-        if self.current_player == Player.EMPTY:
-            return True
-        return False
+        return self._is_finished
+
+    def raise_error_if_invalid(self, move):
+        available_moves = self.get_available_moves()
+        if available_moves and move in available_moves:
+            return
+        if not available_moves and not move:
+            return
+        raise Exception("Move was not in available moves list.")

@@ -51,7 +51,7 @@ class GameController:
         self.game.move(player_move)
 
     def run_game(self):
-        while not self.game.is_finished():
+        while not self.game.is_finished:
             if self.include_ui:
                 current_player = self.game.current_player
                 self.print_field(current_player)
