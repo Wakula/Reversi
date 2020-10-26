@@ -53,6 +53,4 @@ class Game:
     def is_finished(self):
         if self.current_player == Player.EMPTY:
             return True
-        player_moves = self.get_available_moves()
-        opponents_moves = self._field.get_opponent(self.current_player)
-        return not player_moves and not opponents_moves
+        return False

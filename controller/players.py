@@ -33,7 +33,4 @@ class OmikronBot(AbstractPlayer):
 
 class KorotenkoBot(AbstractPlayer):
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
-        available_moves = game_field.get_available_moves(self.player_color)
-        if not available_moves:
-            return
         return self.INPUT_MAPPER.get_coordinates(input())
