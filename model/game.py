@@ -1,13 +1,12 @@
 from model.constants import *
 from model.field import Field
 
-class Game:
 
+class Game:
     def __init__(self, black_hole=None):
         self.current_player = Player.BLACK
         self._field = Field(black_hole)
         self._available_moves = None
-        self._prev_move_passed = False
 
     def get_winner(self):
         black_cells = self._field.get_players_points(Player.BLACK)
@@ -23,18 +22,12 @@ class Game:
     def move(self, move):
         if not move:
             self._available_moves = None
-            if self._prev_move_passed:
-                self.current_player = Player.EMPTY
-                return
-
             self.current_player = self._field.get_opponent(self.current_player)
-            self._prev_move_passed = True
+            if not self.get_available_moves():
+                self.current_player = Player.EMPTY
             return
 
-        self._prev_move_passed = False    
         current_player = self.current_player
-        (row, col) = move
-        cells_to_flip = []
 
         self._field.move(move, current_player)
 
@@ -49,3 +42,8 @@ class Game:
             self._available_moves = self._field.get_available_moves(self.current_player)
 
         return self._available_moves
+
+    def is_finished(self):
+        if self.current_player == Player.EMPTY:
+            return True
+        return False

@@ -51,12 +51,11 @@ class GameController:
         self.game.move(player_move)
 
     def run_game(self):
-        current_player = self.game.current_player
-        while current_player != Player.EMPTY:
+        while not self.game.is_finished():
             if self.include_ui:
+                current_player = self.game.current_player
                 self.print_field(current_player)
             self.move()
-            current_player = self.game.current_player
 
         if self.include_ui:
             self.print_field(None, winner=self.game.get_winner().value)

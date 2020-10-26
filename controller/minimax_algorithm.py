@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple
+import random
 
 
 @dataclass
@@ -20,6 +21,14 @@ class Node:
         self.field = field
         self.player = player
         self.opponent = self.field.get_opponent(self.player)
+        self._available_moves = None
+
+    @property
+    def available_moves(self):
+        if self._available_moves is not None:
+            return self._available_moves
+        self._available_moves = self._available_moves = self.field.get_available_moves(self.player)
+        return self._available_moves
 
     @property
     def is_terminal(self):
@@ -31,10 +40,9 @@ class Node:
 
     @property
     def children(self):
-        available_moves = self.field.get_available_moves(self.player)
-        if not available_moves:
+        if not self.available_moves:
             return Node(self.field, self.opponent), None, lambda: ()
-        for move in available_moves:
+        for move in self.available_moves:
             flipped_cells = self.field.move(move, self.player)
             node = Node(self.field, self.opponent)
             yield node, move, lambda: self.field.undo_move(move, self.player, flipped_cells)
@@ -81,5 +89,8 @@ class MiniMaxReversi:
     def get_move(cls, game_field, player_color):
         initial_node = cls.NODE(game_field, player_color)
         result = cls._minimax(initial_node, -INFINITY, INFINITY, cls.DEPTH, True)
+        move = result.move
+        if not move and initial_node.available_moves:
+            move = random.choice(initial_node.available_moves)
 
-        return result.move
+        return move

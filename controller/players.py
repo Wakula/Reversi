@@ -25,32 +25,13 @@ class OmikronBot(AbstractPlayer):
 
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
         selected_move = self.AI_STRATEGY.get_move(game_field, self.player_color)
-        if not selected_move:
-            print('pass')
-            return
         print(self.INPUT_MAPPER.get_mapping(selected_move))
         return selected_move
 
 
 class KorotenkoBot(AbstractPlayer):
     def select_move(self, game_field: Field) -> Optional[Tuple[int, int]]:
-        available_moves = game_field.get_available_moves(self.player_color)
-        if not available_moves:
-            return
-        # print("Dear Player Input x, y coordinates to move please.")
-        invalid_input = True
-        while invalid_input:
-            try:
-                x, y = self.INPUT_MAPPER.get_coordinates(input())
-            except ValueError:
-                return None
-            if (x, y) not in available_moves:
-                # print(f"({x}, {y}) is not one of available moves. {available_moves}")
-                pass
-            else:
-                invalid_input = False
-
-        return x, y
+        return self.INPUT_MAPPER.get_coordinates(input())
 
 
 class TestBot(OmikronBot):
