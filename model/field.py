@@ -1,21 +1,19 @@
-from model.cell_flipper import CellFlipper
 from model.constants import *
 import copy
 
 
 class Field:
-    FLIP_CELLS = {
-        Directions.UP: lambda flipper: flipper.flip_up(),
-        Directions.DOWN: lambda flipper: flipper.flip_down(),
-        Directions.LEFT: lambda flipper: flipper.flip_left(),
-        Directions.RIGHT: lambda flipper: flipper.flip_right(),
-        Directions.UPLEFT: lambda flipper: flipper.flip_up_left(),
-        Directions.UPRIGHT: lambda flipper: flipper.flip_up_right(),
-        Directions.DOWNLEFT: lambda flipper: flipper.flip_down_left(),
-        Directions.DOWNRIGHT: lambda flipper: flipper.flip_down_right(),
+    
+    DIRECTION_MAPPINGS = {
+        Directions.DOWN: lambda row, col: (row+1, col),
+        Directions.UP: lambda row, col: (row-1, col),
+        Directions.LEFT: lambda row, col: (row, col-1),
+        Directions.RIGHT: lambda row, col: (row, col+1),
+        Directions.DOWNLEFT: lambda row, col: (row+1, col-1),
+        Directions.DOWNRIGHT: lambda row, col: (row+1, col+1),
+        Directions.UPLEFT: lambda row, col: (row-1, col-1),
+        Directions.UPRIGHT: lambda row, col: (row-1, col+1)
     }
-
-    CELL_FLIPPER = CellFlipper
 
     def __init__(self, black_hole=None):
         self._side_length = 8
@@ -44,10 +42,9 @@ class Field:
             for col in range(len(self.field[row])):
                 if self.field[row][col] == Player.EMPTY:
                     for direction in Directions:
-                        cells_to_flip = self._would_flip_cells((row, col), direction, player)
-                        if cells_to_flip is not None:
+                        cells_to_flip = self._get_flipped_cells((row, col), direction, player)
+                        if cells_to_flip:
                             moves.append((row, col))
-                            break
         return moves
 
     def get_players_points(self, player):
@@ -68,149 +65,17 @@ class Field:
         cells_to_flip = []
 
         for direction in Directions:
-            direction_cells_to_flip = self._would_flip_cells((row, col), direction, player)
-            if direction_cells_to_flip is not None:
-                for dir_cell_to_flip in direction_cells_to_flip:
-                    cells_to_flip.append(dir_cell_to_flip)
+            cells_to_flip += self._get_flipped_cells((row, col), direction, player)
 
-        for cell_to_flip in cells_to_flip:
-            (flip_cell_row, flip_cell_col) = cell_to_flip
-            self.field[flip_cell_row][flip_cell_col] = player
+        if cells_to_flip:
+            for cell_to_flip in cells_to_flip:
+                (flip_cell_row, flip_cell_col) = cell_to_flip
+                self.field[flip_cell_row][flip_cell_col] = player
         
         self.field[row][col] = player
 
         return cells_to_flip
-
-    def get_copy(self):
-        new_field = Field()
-        new_field.field = copy.deepcopy(self.field)
-        return new_field
-
-    def _would_flip_cells(self, cell, direction, player):
-        flipped_cells = []
-        (start_row, start_col) = cell
-
-        row = start_row
-        col = start_col
-
-        opponent = self.get_opponent(player)
-
-        if direction == Directions.UP:
-            while row > 0:
-                row -= 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if row == start_row - 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.DOWN:
-            while row < len(self.field) - 1:
-                row += 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if row == start_row + 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.LEFT:
-            while col > 0:
-                col -= 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if col == start_col - 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.RIGHT:
-            while col < len(self.field[row]) - 1:
-                col += 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if col == start_col + 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.UPLEFT:
-            while col > 0 and row > 0:
-                col -= 1
-                row -= 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if col == start_col - 1 and row == start_row - 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.UPRIGHT:
-            while col < len(self.field[row]) - 1 and row > 0:
-                col += 1
-                row -= 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if col == start_col + 1 and row == start_row - 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.DOWNLEFT:
-            while col > 0 and row < len(self.field) - 1:
-                col -= 1
-                row += 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if col == start_col - 1 and row == start_row + 1:
-                        return None
-                    else:
-                        return flipped_cells
-
-        elif direction == Directions.DOWNRIGHT:
-            while col < len(self.field[row]) - 1 and row < len(self.field) - 1:
-                col += 1
-                row += 1
-                if self.field[row][col] == opponent:
-                    flipped_cells.append((row, col))
-                    continue
-                elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
-                    return None
-                elif self.field[row][col] == player:
-                    if col == start_col + 1 and row == start_row + 1:
-                        return None
-                    else:
-                        return flipped_cells
-
+    
     def undo_move(self, move, player, cells_to_flip):
         opponent = self.get_opponent(player)
         row, col = move
@@ -220,3 +85,36 @@ class Field:
             self.field[flip_cell_row][flip_cell_col] = opponent
 
         self.field[row][col] = Player.EMPTY
+
+    def get_copy(self):
+        new_field = Field()
+        new_field.field = copy.deepcopy(self.field)
+        return new_field
+
+    def _get_flipped_cells(self, start_cell, direction, player):
+        flipped_cells = []
+        (start_row, start_col) = start_cell
+        opponent = self.get_opponent(player)
+
+        apply_direction = self.DIRECTION_MAPPINGS[direction]
+        row, col = apply_direction(start_row, start_col)
+        
+        while not self._is_out_of_field(row, col):
+            if self.field[row][col] == opponent:
+                flipped_cells.append((row, col))
+                row, col = apply_direction(row, col)
+                continue
+            elif self.field[row][col] == Player.EMPTY or self.field[row][col] == Player.HOLE:
+                return []
+            elif self.field[row][col] == player:
+                if abs(row - start_row) == 1 or abs(col - start_col) == 1:
+                    return []
+                return flipped_cells
+                
+        return []
+    
+    def _is_out_of_field(self, row, col):
+        field_row_length = len(self.field)
+        field_col_length = len(self.field[0])
+
+        return row < 0 or col < 0 or row > field_col_length - 1 or col > field_row_length - 1
