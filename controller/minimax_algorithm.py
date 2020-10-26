@@ -10,11 +10,28 @@ class Result:
 
 
 INFINITY = float('inf')
-
-CORNERS = [
-    (0, 0), (0, 7), (7, 0), (7, 7)
+"""
+HEAT_MAP = [
+    [0.0, 8,  0.4, 0.5, 0.5, 0.4,  8,  0.0],
+    [8,  10,    3,   5,   5,   3, 10,   8],
+    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
+    [0.5, 5,    1,   1,   1,   1,  5,  0.5],
+    [0.5, 5,    1,   1,   1,   1,  5,  0.5],
+    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
+    [8,  10,    3,   5,   5,   3, 10,   8],
+    [0.0, 8,  0.4, 0.5, 0.5, 0.4,  8,  0.0]
 ]
-
+"""
+HEAT_MAP = [
+    [0.0, 10, 0.4, 0.5, 0.5, 0.4, 10,  0.0],
+    [10,  15,   3,   5,   5,   3, 15,   10],
+    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
+    [0.5, 5,    1,   1,   1,   1,  5,  0.5],
+    [0.5, 5,    1,   1,   1,   1,  5,  0.5],
+    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
+    [10,  15,   3,   5,   5,   3, 15,   10],
+    [0.0, 10, 0.4, 0.5, 0.5, 0.4, 10,  0.0]
+]
 
 class Node:
     def __init__(self, field, player):
@@ -36,7 +53,7 @@ class Node:
 
     @property
     def value(self):
-        return self.field.get_players_points(self.player)
+        return self.field.get_players_points(self.field.get_opponent(self.player)) - self.field.get_players_points(self.player)
 
     @property
     def children(self):
@@ -59,9 +76,9 @@ class MiniMaxReversi:
         if maximizing_player:
             result = Result(value=-INFINITY)
             for child, move, undo_move in node.children:
+                (row, col) = move
                 minimax_result = cls._minimax(child, alpha, beta, depth-1, False)
-                if move in CORNERS:
-                    minimax_result.value = INFINITY
+                minimax_result.value *= HEAT_MAP[row][col]
                 alpha = max(alpha, result.value)
                 undo_move()
                 if minimax_result.value <= result.value:
@@ -73,9 +90,9 @@ class MiniMaxReversi:
         else:
             result = Result(value=INFINITY)
             for child, move, undo_move in node.children:
+                (row, col) = move
                 minimax_result = cls._minimax(child, alpha, beta, depth-1, True)
-                if move in CORNERS:
-                    minimax_result.value = -INFINITY
+                minimax_result.value *= HEAT_MAP[row][col]
                 beta = min(beta, result.value)
                 undo_move()
                 if minimax_result.value <= result.value:

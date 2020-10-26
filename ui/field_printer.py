@@ -16,7 +16,7 @@ class FieldPrinter:
     WINNER_MESSAGES = {
         'B': 'Black player wins',
         'W': 'White player wins',
-        'empty': 'Draw'
+        ' ': 'Draw'
     }
     PLAYER_OUTPUT = {
         'W': 'White player turn',
