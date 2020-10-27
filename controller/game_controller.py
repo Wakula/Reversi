@@ -57,5 +57,6 @@ class GameController:
                 self.print_field(current_player)
             self.move()
 
+        self.game.get_field()._cache.reset_cache()
         if self.include_ui:
             self.print_field(None, winner=self.game.get_winner().value)

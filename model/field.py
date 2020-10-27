@@ -1,4 +1,5 @@
 from model.constants import *
+from model.cache import Cache
 import copy
 
 
@@ -17,12 +18,14 @@ class Field:
 
     def __init__(self, black_hole=None):
         self._side_length = 8
+        self._cache = Cache.get_instance()
         self.field = [[Player.EMPTY] * self._side_length for i in range(self._side_length)]
 
         half_length = self._side_length // 2
 
         self.field[half_length - 1][half_length - 1] = self.field[half_length][half_length] = Player.WHITE
         self.field[half_length - 1][half_length] = self.field[half_length][half_length - 1] = Player.BLACK
+        self.black_hole = black_hole
 
         if black_hole is not None:
             (row, col) = black_hole
@@ -37,6 +40,10 @@ class Field:
             return None   
 
     def get_available_moves(self, player):
+        cached_moves = self._cache.try_get_moves(self.field, player)
+        if cached_moves is not None:
+            return cached_moves
+
         moves = []
         for row in range(len(self.field)):
             for col in range(len(self.field[row])):
@@ -45,6 +52,9 @@ class Field:
                         cells_to_flip = self._get_flipped_cells((row, col), direction, player)
                         if cells_to_flip:
                             moves.append((row, col))
+                            break
+
+        self._cache.save_state(self.field, player, moves)
         return moves
 
     def get_players_points(self, player):
