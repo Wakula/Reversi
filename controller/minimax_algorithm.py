@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple
+from model.constants import Player
+import math
 import random
 
 
@@ -12,26 +14,16 @@ class Result:
 INFINITY = float('inf')
 """
 HEAT_MAP = [
-    [0.0, 8,  0.4, 0.5, 0.5, 0.4,  8,  0.0],
-    [8,  10,    3,   5,   5,   3, 10,   8],
-    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
+    [0.0, 8,  0.2, 0.5, 0.5, 0.2,  8,  0.0],
+    [8,  1.2,    0.25,   5,   5,   0.25, 1.2,   8],
+    [0.2, 0.25,  0.2,   1,   1, 0.2,  0.25,  0.2],
     [0.5, 5,    1,   1,   1,   1,  5,  0.5],
     [0.5, 5,    1,   1,   1,   1,  5,  0.5],
-    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
-    [8,  10,    3,   5,   5,   3, 10,   8],
-    [0.0, 8,  0.4, 0.5, 0.5, 0.4,  8,  0.0]
+    [0.2, 0.25,  0.2,   1,   1, 0.2,  0.25,  0.2],
+    [8,  1.2,    0.25,   5,   5,   0.25, 1.2,   8],
+    [0.0, 8,  0.2, 0.5, 0.5, 0.2,  8,  0.0]
 ]
 """
-HEAT_MAP = [
-    [0.0, 10, 0.4, 0.5, 0.5, 0.4, 10,  0.0],
-    [10,  15,   3,   5,   5,   3, 15,   10],
-    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
-    [0.5, 5,    1,   1,   1,   1,  5,  0.5],
-    [0.5, 5,    1,   1,   1,   1,  5,  0.5],
-    [0.4, 3,  0.4,   1,   1, 0.4,  3,  0.4],
-    [10,  15,   3,   5,   5,   3, 15,   10],
-    [0.0, 10, 0.4, 0.5, 0.5, 0.4, 10,  0.0]
-]
 
 class Node:
     def __init__(self, field, player):
@@ -53,7 +45,8 @@ class Node:
 
     @property
     def value(self):
-        return self.field.get_players_points(self.field.get_opponent(self.player)) - self.field.get_players_points(self.player)
+        return self.field.get_players_points(self.player)
+        #return (self.field.get_players_points(self.field.get_opponent(self.player)) + 1) / (self.field.get_players_points(self.player) + 1)
 
     @property
     def children(self):
@@ -68,6 +61,7 @@ class Node:
 class MiniMaxReversi:
     NODE = Node
     DEPTH = 3
+    HEAT_MAP = []
 
     @classmethod
     def _minimax(cls, node, alpha, beta, depth, maximizing_player) -> Result:
@@ -78,10 +72,10 @@ class MiniMaxReversi:
             for child, move, undo_move in node.children:
                 (row, col) = move
                 minimax_result = cls._minimax(child, alpha, beta, depth-1, False)
-                minimax_result.value *= HEAT_MAP[row][col]
+                minimax_result.value *= (-cls.HEAT_MAP[row][col])
                 alpha = max(alpha, result.value)
                 undo_move()
-                if minimax_result.value <= result.value:
+                if minimax_result.value >= result.value:
                     result = minimax_result
                     result.move = move
                 if beta <= alpha:
@@ -92,7 +86,7 @@ class MiniMaxReversi:
             for child, move, undo_move in node.children:
                 (row, col) = move
                 minimax_result = cls._minimax(child, alpha, beta, depth-1, True)
-                minimax_result.value *= HEAT_MAP[row][col]
+                minimax_result.value *= cls.HEAT_MAP[row][col]
                 beta = min(beta, result.value)
                 undo_move()
                 if minimax_result.value <= result.value:
@@ -104,6 +98,9 @@ class MiniMaxReversi:
 
     @classmethod
     def get_move(cls, game_field, player_color):
+        if not cls.HEAT_MAP:
+            cls.init_heat_map(game_field)
+
         initial_node = cls.NODE(game_field, player_color)
         result = cls._minimax(initial_node, -INFINITY, INFINITY, cls.DEPTH, True)
         move = result.move
@@ -111,3 +108,32 @@ class MiniMaxReversi:
             move = random.choice(initial_node.available_moves)
 
         return move
+    
+    @classmethod
+    def init_heat_map(cls, game_field):
+        cls.HEAT_MAP = [
+            [0.01, 1.2, 0.7, 0.5, 0.5, 0.7, 1.2,  0.01],
+            [1.2,  1.5,  0.6, 0.8,   0.8,  0.6, 1.5, 1.2],
+            [0.7, 0.6, 0.8,   1,   1, 0.8,  0.6,  0.7],
+            [0.5, 0.8,   1,   1,   1,   1,  0.8,  0.5],
+            [0.5, 0.8,   1,   1,   1,   1,  0.8,  0.5],
+            [0.7, 0.6, 0.8,   1,   1, 0.8,  0.6,  0.7],
+            [1.2, 1.5,  0.6, 0.8, 0.8, 0.6, 1.5, 1.2],
+            [0.01, 1.2, 0.7, 0.5, 0.5, 0.7, 1.2,  0.01]
+        ]
+
+        for row in cls.HEAT_MAP:
+            for cell in row:
+                cell = math.sqrt(cell)
+
+        if game_field.black_hole is not None:
+            (row, col) = game_field.black_hole
+            field_row_len = len(game_field.field)
+            field_col_len = len(game_field.field[0])
+
+            def is_in_field(row, col):
+                return row >= 0 and col >= 0 and (row <= field_row_len - 1) and (col <= field_col_len - 1)
+            if row == 0 or col == 0 or row == field_row_len - 1 or col == field_col_len - 1: 
+                for (dx, dy) in [(x, y) for x in (-1, 0, 1) for y in (-1, 0, 1)]:
+                    if is_in_field(row+dx, col+dy):
+                        cls.HEAT_MAP[row+dx][col+dy] = 0.01
